@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class DrinkList extends AppCompatActivity {
     TextView tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tvMain;
-    ImageButton iBtn1, iBtn2, iBtn3, iBtn4, iBtn5, iBtn6, iBtn7, iBtn8, iBtn9;
+    ImageButton iBtn1, iBtn2, iBtn3, iBtn4, iBtn5, iBtn6, iBtn7, iBtn8, iBtn9, orderCartIb;
     Button btn1, btn2, btn3, btn4, btnBack, btnCommunity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +30,7 @@ public class DrinkList extends AppCompatActivity {
         int[] buttonId = {R.id.btn1, R.id.btn2, R.id.btn3, R.id.btn4};
         btnBack = findViewById(R.id.btnBack);
         btnCommunity = findViewById(R.id.btnCommunity);
+        orderCartIb = findViewById(R.id.orderCartIb);
         //초기화
         for (int i = 0; i<imageButtons.length; i++){
             textViews[i] = findViewById(textViewId[i]);
@@ -48,6 +49,11 @@ public class DrinkList extends AppCompatActivity {
         });
         btnCommunity.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), Community.class);
+            startActivity(intent);
+        });
+
+        orderCartIb.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), shoppingCart.class);
             startActivity(intent);
         });
 
