@@ -15,11 +15,17 @@
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/listAddBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상품 추가" />
+
         <ImageView
             android:id="@+id/ivMain"
             android:layout_width="wrap_content"
             android:layout_height="96dp"
-            android:layout_marginStart="150dp"
+            android:layout_marginStart="100dp"
             tools:srcCompat="@tools:sample/avatars" />
 
         <View
