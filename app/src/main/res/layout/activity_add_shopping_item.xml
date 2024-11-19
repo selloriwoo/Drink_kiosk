@@ -32,7 +32,7 @@
         android:layout_height="wrap_content" >
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="380dp"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
@@ -90,9 +90,18 @@
         android:hint="가격" />
 
     <Button
-        android:id="@+id/addItemBtn"
+        android:id="@+id/addImageBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="사진 추가" />
+
+    <Button
+        android:id="@+id/addItemFinish"
+        android:layout_width="250dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="등록하기" />
 </LinearLayout>
