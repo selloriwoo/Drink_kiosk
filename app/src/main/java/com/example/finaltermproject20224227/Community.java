@@ -1,6 +1,7 @@
 package com.example.finaltermproject20224227;
 
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,15 +16,23 @@ import java.util.ArrayList;
 public class Community extends AppCompatActivity {
     ArrayList<ReviewData> reviewDataArrayList = new ArrayList<>();
     MyAdapter adapter;
+    Button communityBackBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_community);
+
+        communityBackBtn = findViewById(R.id.communityBackBtn);
         RecyclerView recyclerView = findViewById(R.id.communityRcView);
         adapter = new MyAdapter(this, reviewDataArrayList);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        communityBackBtn.setOnClickListener(view -> {
+            finish();
+        });
 
         //todo sql불러와서 review에 넣기
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
