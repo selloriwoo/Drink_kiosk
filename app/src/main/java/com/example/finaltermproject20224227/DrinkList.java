@@ -2,6 +2,7 @@ package com.example.finaltermproject20224227;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ public class DrinkList extends AppCompatActivity {
     Button btn1, btn2, btn3, btn4, btnBack, btnCommunity, listAddBtn, addItemFinish, addImageBtn;
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int STORAGE_PERMISSION_CODE = 101;
+    private Bitmap selectedBitmap;
     DBhelper dBhelper;
 
     @Override
@@ -44,6 +46,12 @@ public class DrinkList extends AppCompatActivity {
         orderCartIb = findViewById(R.id.orderCartIb);
         listAddBtn = findViewById(R.id.listAddBtn);
         dBhelper = new DBhelper(this);
+        
+        //db파일 없으면 생성
+        if (!dBhelper.checkDatabase()) {
+            dBhelper.getWritableDatabase();
+        }
+
         //초기화
         for (int i = 0; i<imageButtons.length; i++){
             textViews[i] = findViewById(textViewId[i]);
@@ -57,6 +65,7 @@ public class DrinkList extends AppCompatActivity {
                 //todo 클릭시 디테일 나오게
             });
         }
+
         btnBack.setOnClickListener(view -> {
             finish();
         });
@@ -76,10 +85,12 @@ public class DrinkList extends AppCompatActivity {
             finishDialog.setTitle("ww");
             addItemFinish = finishDialog.findViewById(R.id.addItemFinish);
             addImageBtn = finishDialog.findViewById(R.id.addImageBtn);
+            //todo: radio버튼
             addImageBtn.setOnClickListener(view1 -> {
                     openFileChooser();
             });
             addItemFinish.setOnClickListener(view1 -> {
+                saveStoreItem();
                 finish();
             });
             finishDialog.show();
@@ -104,25 +115,23 @@ public class DrinkList extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                saveImageToDatabase(bitmap);
+                selectedBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void saveImageToDatabase(Bitmap bitmap) {
-        try {
+    private void saveStoreItem() {
+        if (selectedBitmap != null) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] imageBytes = stream.toByteArray();
             //todo: 여러값 추가
 //            dBhelper.addItem(imageBytes, "ww", 1L,200);
-            Toast.makeText(this, "이미지가 데이터베이스에 저장되었습니다.", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "이미지 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "상품이 등록되었습니다.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "먼저 이미지를 선택하세요.", Toast.LENGTH_SHORT).show();
         }
     }
 }

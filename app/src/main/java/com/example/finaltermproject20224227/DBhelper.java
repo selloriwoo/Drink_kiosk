@@ -6,12 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.File;
+
 public class DBhelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "DrinkCafe.db";
     private static final int DATABASE_VERSION = 1;
-
+    private final Context context;
     public DBhelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -44,6 +47,21 @@ public class DBhelper extends SQLiteOpenHelper {
                 "orderDate DATE," +
                 "drinkItemId INTEGER," +
                 "FOREIGN KEY (drinkItemId) REFERENCES drinkItem(id));");
+
+        //기본 술 종류
+        for (DrinkCategory kind : DrinkCategory.values()) {
+            ContentValues values = new ContentValues();
+            values.put("kind", kind.toString());
+            db.insert("drinkKind", null, values);
+        }
+        
+        //todo:기본 술 추가
+
+    }
+
+    public boolean checkDatabase() {
+        File dbFile = context.getDatabasePath(DATABASE_NAME);
+        return dbFile.exists();
     }
 
     @Override
