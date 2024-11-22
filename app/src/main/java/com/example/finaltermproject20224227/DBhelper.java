@@ -5,8 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBhelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "DrinkCafe.db";
@@ -54,8 +59,29 @@ public class DBhelper extends SQLiteOpenHelper {
             values.put("kind", kind.toString());
             db.insert("drinkKind", null, values);
         }
-        
-        //todo:기본 술 추가
+
+        // 기본 술 아이템 추가
+        ArrayList<DrinkItem> drinkItems = new ArrayList<>();
+        drinkItems.add(new DrinkItem("블랙라벨", getBytesFromDrawable(context, R.drawable.wisky_black_label), 1, 70000));
+        drinkItems.add(new DrinkItem("잭다니엘", getBytesFromDrawable(context, R.drawable.wisky_jackdaniel), 1, 80000));
+        drinkItems.add(new DrinkItem("제임슨", getBytesFromDrawable(context, R.drawable.wisky_jameson), 1, 40000));
+        drinkItems.add(new DrinkItem("와일드터키", getBytesFromDrawable(context, R.drawable.wisky_wildturkey), 1, 60000));
+        drinkItems.add(new DrinkItem("앱솔루트", getBytesFromDrawable(context, R.drawable.bodka_absolut), 2, 40000));
+        drinkItems.add(new DrinkItem("밸루가", getBytesFromDrawable(context, R.drawable.bodka_beluga), 2, 100000));
+        drinkItems.add(new DrinkItem("에덴", getBytesFromDrawable(context, R.drawable.bodka_eden), 2, 50000));
+        drinkItems.add(new DrinkItem("러시아 스텐다드 오리지널", getBytesFromDrawable(context, R.drawable.bodka_russian_standard_original), 2, 50000));
+
+
+        //todo: 다른 술도 넣기.
+
+        for (DrinkItem item : drinkItems) {
+            ContentValues values = new ContentValues();
+            values.put("name", item.getName());
+            values.put("pic", item.getPic());
+            values.put("kindId", item.getKindId());
+            values.put("price", item.getPrice());
+            db.insert("drinkItem", null, values);
+        }
 
     }
 
@@ -96,5 +122,37 @@ public class DBhelper extends SQLiteOpenHelper {
             return image;
         }
         return null;
+    }
+
+    //사진을 바이트로 변환
+    public byte[] getBytesFromDrawable(Context context, int drawableId) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), drawableId);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
+
+    //술 종류에 따른 술들 불러오기
+    public List<DrinkItem> getDrinkItemsByKindId(int kindId) {
+        List<DrinkItem> drinkItems = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("drinkItem",
+                new String[]{"name", "pic", "kindId", "price"},
+                "kindId=?",
+                new String[]{String.valueOf(kindId)},
+                null, null, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                byte[] pic = cursor.getBlob(cursor.getColumnIndexOrThrow("pic"));
+                int kindIdFromDb = cursor.getInt(cursor.getColumnIndexOrThrow("kindId"));
+                int price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
+                drinkItems.add(new DrinkItem(name, pic, kindIdFromDb, price));
+            }
+            cursor.close();
+        }
+        db.close();
+        return drinkItems;
     }
 }
