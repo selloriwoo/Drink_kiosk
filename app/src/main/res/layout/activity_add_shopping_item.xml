@@ -89,6 +89,13 @@
         android:inputType="numberDecimal"
         android:hint="가격" />
 
+    <ImageView
+        android:id="@+id/addIv"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        tools:srcCompat="@tools:sample/avatars" />
+
     <Button
         android:id="@+id/addImageBtn"
         android:layout_width="wrap_content"

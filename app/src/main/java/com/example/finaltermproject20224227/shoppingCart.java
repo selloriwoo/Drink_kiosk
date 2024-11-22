@@ -33,6 +33,7 @@ public class shoppingCart extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             });
+            //todo: 주문완료 사운드 넣기 new TextToSpeech(this,this)
             finishDialog.show();
         });
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
