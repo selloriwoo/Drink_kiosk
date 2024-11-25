@@ -66,10 +66,10 @@ public class DBhelper extends SQLiteOpenHelper {
         drinkItems.add(new DrinkItem("잭다니엘", getBytesFromDrawable(context, R.drawable.wisky_jackdaniel), 1, 80000));
         drinkItems.add(new DrinkItem("제임슨", getBytesFromDrawable(context, R.drawable.wisky_jameson), 1, 40000));
         drinkItems.add(new DrinkItem("와일드터키", getBytesFromDrawable(context, R.drawable.wisky_wildturkey), 1, 60000));
-        drinkItems.add(new DrinkItem("앱솔루트", getBytesFromDrawable(context, R.drawable.bodka_absolut), 2, 40000));
-        drinkItems.add(new DrinkItem("밸루가", getBytesFromDrawable(context, R.drawable.bodka_beluga), 2, 100000));
-        drinkItems.add(new DrinkItem("에덴", getBytesFromDrawable(context, R.drawable.bodka_eden), 2, 50000));
-        drinkItems.add(new DrinkItem("러시아 스텐다드 오리지널", getBytesFromDrawable(context, R.drawable.bodka_russian_standard_original), 2, 50000));
+        drinkItems.add(new DrinkItem("앱솔루트", getBytesFromDrawable(context, R.drawable.vodka_absolut), 2, 40000));
+        drinkItems.add(new DrinkItem("밸루가", getBytesFromDrawable(context, R.drawable.vodka_beluga), 2, 100000));
+        drinkItems.add(new DrinkItem("에덴", getBytesFromDrawable(context, R.drawable.vodka_eden), 2, 50000));
+        drinkItems.add(new DrinkItem("러시아 스텐다드 오리지널", getBytesFromDrawable(context, R.drawable.vodka_russian_standard_original), 2, 50000));
 
 
         //todo: 다른 술도 넣기.

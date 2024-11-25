@@ -66,28 +66,28 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn1"
+            android:id="@+id/btnWhisky"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="위스키" />
 
         <Button
-            android:id="@+id/btn2"
+            android:id="@+id/btnVodka"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="보드카" />
 
         <Button
-            android:id="@+id/btn3"
+            android:id="@+id/btnCocktail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="칵테일" />
 
         <Button
-            android:id="@+id/btn4"
+            android:id="@+id/btnSake"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -122,12 +122,12 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn1"
+                            android:id="@+id/iv1"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -135,12 +135,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
+
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice1"
@@ -159,20 +162,20 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/listLayout2"
                         android:layout_width="90dp"
                         android:layout_height="150dp"
-                        android:id="@+id/listLayout2"
                         android:layout_marginEnd="10dp"
                         android:background="@drawable/border"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn2"
+                            android:id="@+id/iv2"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -180,13 +183,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice2"
@@ -204,19 +209,19 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/listLayout3"
                         android:layout_width="90dp"
                         android:layout_height="150dp"
-                        android:id="@+id/listLayout3"
                         android:background="@drawable/border"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn3"
+                            android:id="@+id/iv3"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -224,13 +229,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice3"
@@ -254,20 +261,20 @@
                     android:layout_marginTop="40dp">
 
                     <LinearLayout
+                        android:id="@+id/listLayout4"
                         android:layout_width="90dp"
                         android:layout_height="150dp"
-                        android:id="@+id/listLayout4"
                         android:layout_marginEnd="10dp"
                         android:background="@drawable/border"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn4"
+                            android:id="@+id/iv4"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -275,13 +282,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice4"
@@ -299,20 +308,20 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/listLayout5"
                         android:layout_width="90dp"
                         android:layout_height="150dp"
-                        android:id="@+id/listLayout5"
-                        android:background="@drawable/border"
                         android:layout_marginEnd="10dp"
+                        android:background="@drawable/border"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn5"
+                            android:id="@+id/iv5"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -320,13 +329,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice5"
@@ -344,19 +355,19 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/listLayout6"
                         android:layout_width="90dp"
                         android:layout_height="150dp"
-                        android:id="@+id/listLayout6"
                         android:background="@drawable/border"
                         android:orientation="vertical">
 
                         <ImageButton
-                            android:id="@+id/iBtn6"
+                            android:id="@+id/iv6"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -364,19 +375,23 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice6"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
+                                android:ellipsize="end"
+                                android:singleLine="true"
                                 android:text="10000" />
 
                             <TextView
@@ -394,20 +409,20 @@
                     android:layout_marginTop="40dp">
 
                     <LinearLayout
+                        android:id="@+id/listLayout7"
                         android:layout_width="90dp"
                         android:layout_height="150dp"
                         android:layout_marginEnd="10dp"
-                        android:id="@+id/listLayout7"
                         android:background="@drawable/border"
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn7"
+                            android:id="@+id/iv7"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -415,13 +430,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice7"
@@ -447,12 +464,12 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn8"
+                            android:id="@+id/iv8"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -460,13 +477,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice8"
@@ -491,12 +510,12 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:id="@+id/iBtn9"
+                            android:id="@+id/iv9"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center"
-                            android:scaleType="centerInside"
                             android:background="@color/white"
+                            android:scaleType="centerInside"
                             tools:srcCompat="@tools:sample/avatars" />
 
                         <TextView
@@ -504,13 +523,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
                             android:text="TextView" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_gravity="center">
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvPrice9"
@@ -529,6 +550,7 @@
                 </TableRow>
 
             </TableLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
