@@ -2,7 +2,6 @@ package com.example.finaltermproject20224227;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,15 +29,20 @@ import java.util.List;
 public class DrinkList extends AppCompatActivity {
     TextView tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tvMain, tvCartCount;
     TextView tvPrice1, tvPrice2, tvPrice3, tvPrice4, tvPrice5, tvPrice6, tvPrice7, tvPrice8, tvPrice9;
-    ImageView iBtn1, iBtn2, iBtn3, iBtn4, iBtn5, iBtn6, iBtn7, iBtn8, iBtn9, orderCartIb;
-    Button btn1, btn2, btn3, btn4, btnBack, btnCommunity, listAddBtn, addItemFinish, addImageBtn;
+    ImageView iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9, orderCartIb;
+    Button btnWhisky, btnVodka, btnCocktail, btnSake, btnBack, btnCommunity, listAddBtn, addItemFinish, addImageBtn;
     ImageView addIv;
     LinearLayout listLayout1, listLayout2, listLayout3, listLayout4, listLayout5, listLayout6, listLayout7, listLayout8, listLayout9;
+    TextView[] textViews = {tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tvMain};
+    TextView[] tvPrices = {tvPrice1, tvPrice2, tvPrice3, tvPrice4, tvPrice5, tvPrice6, tvPrice7, tvPrice8, tvPrice9};
+    ImageView[] imageViews = {iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9};
+    Button[] buttons = {btnWhisky, btnVodka, btnCocktail, btnSake};
+    LinearLayout[] linearLayouts = {listLayout1, listLayout2, listLayout3, listLayout4, listLayout5, listLayout6, listLayout7, listLayout8, listLayout9};
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int STORAGE_PERMISSION_CODE = 101;
     private Bitmap selectedBitmap;
     DBhelper dBhelper;
-    int categoryPtr = 0;
+    int categoryPtr = 1;
     int cartCountVal = 0;
     ArrayList<DrinkItem> shoppingCartList = new ArrayList<>();
 
@@ -48,15 +51,11 @@ public class DrinkList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_drink_list);
-        TextView[] textViews = {tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tvMain};
-        TextView[] tvPrices = {tvPrice1, tvPrice2, tvPrice3, tvPrice4, tvPrice5, tvPrice6, tvPrice7, tvPrice8, tvPrice9};
-        ImageView[] imageViews = {iBtn1, iBtn2, iBtn3, iBtn4, iBtn5, iBtn6, iBtn7, iBtn8, iBtn9};
-        Button[] buttons = {btn1, btn2, btn3, btn4};
-        LinearLayout[] linearLayouts = {listLayout1, listLayout2, listLayout3, listLayout4, listLayout5, listLayout6, listLayout7, listLayout8, listLayout9};
+
         int[] textViewId = {R.id.tv1, R.id.tv2,R.id.tv3,R.id.tv4,R.id.tv5,R.id.tv6,R.id.tv7,R.id.tv8,R.id.tv9};
         int[] tvPriceID = {R.id.tvPrice1, R.id.tvPrice2, R.id.tvPrice3, R.id.tvPrice4, R.id.tvPrice5, R.id.tvPrice6, R.id.tvPrice7, R.id.tvPrice8, R.id.tvPrice9};
-        int[] imageButtonId = {R.id.iBtn1,R.id.iBtn2,R.id.iBtn3,R.id.iBtn4,R.id.iBtn5,R.id.iBtn6,R.id.iBtn7,R.id.iBtn8,R.id.iBtn9};
-        int[] buttonId = {R.id.btn1, R.id.btn2, R.id.btn3, R.id.btn4};
+        int[] imageButtonId = {R.id.iv1,R.id.iv2,R.id.iv3,R.id.iv4,R.id.iv5,R.id.iv6,R.id.iv7,R.id.iv8,R.id.iv9};
+        int[] buttonId = {R.id.btnWhisky, R.id.btnVodka, R.id.btnCocktail, R.id.btnSake};
         int[] linearLayoutId = {R.id.listLayout1, R.id.listLayout2, R.id.listLayout3, R.id.listLayout4, R.id.listLayout5, R.id.listLayout6, R.id.listLayout7, R.id.listLayout8, R.id.listLayout9};
         btnBack = findViewById(R.id.btnBack);
         btnCommunity = findViewById(R.id.btnCommunity);
@@ -77,52 +76,46 @@ public class DrinkList extends AppCompatActivity {
 
         //초기화
         tvCartCount = findViewById(R.id.tvCartCount);
-        for (int i = 0; i<imageViews.length; i++){
-            textViews[i] = findViewById(textViewId[i]);
-            imageViews[i] = findViewById(imageButtonId[i]);
+                for (int i = 0; i<imageViews.length; i++){
+                    textViews[i] = findViewById(textViewId[i]);
+                    imageViews[i] = findViewById(imageButtonId[i]);
+                }
+                for (int i = 0; i<linearLayouts.length; i++)
+                    linearLayouts[i] = findViewById(linearLayoutId[i]);
+
+                for (int i = 0; i<tvPrices.length; i++)
+                    tvPrices[i] = findViewById(tvPriceID[i]);
+
+                for (int i = 0; i < buttons.length; i++)
+                    buttons[i]= findViewById(buttonId[i]);
+
+        for (int i = 0; i <buttons.length; i++){
+            int index = i+1;
+            buttons[i].setOnClickListener(view -> {
+                categoryPtr= index;
+                List<DrinkItem> drinkItems = dBhelper.getDrinkItemsByKindId(categoryPtr);
+                viewListItem(drinkItems);
+            });
         }
-        for (int i = 0; i<linearLayouts.length; i++)
-            linearLayouts[i] = findViewById(linearLayoutId[i]);
-
-        for (int i = 0; i<tvPrices.length; i++)
-            tvPrices[i] = findViewById(tvPriceID[i]);
-
-        for (int i = 0; i < buttons.length; i++)
-            buttons[i]= findViewById(buttonId[i]);
-
         for (int i =0; i < linearLayouts.length; i++){
             int index = i; //안 적으면 리스너 안에서 i 값 사용 불가
             linearLayouts[i].setOnClickListener(view -> {
                 //todo 클릭시 장바구니에 담게.
-                shoppingCartList.add(new DrinkItem(textViews[index].getText().toString(),getBytesFromBitmap(((BitmapDrawable)imageViews[index].getDrawable()).getBitmap()),categoryPtr, Integer.parseInt(tvPrices[index].getText().toString())));
+                addToCart(new DrinkItem(textViews[index].getText().toString(),getBytesFromBitmap(((BitmapDrawable)imageViews[index].getDrawable()).getBitmap()),categoryPtr, Integer.parseInt(tvPrices[index].getText().toString())));
                 Bitmap bitmap = BitmapFactory.decodeByteArray(shoppingCartList.get(index).getPic(), 0, shoppingCartList.get(index).getPic().length);
                 imageViews[7].setImageBitmap(bitmap);
                 cartCountVal++;
                 tvCartCount.setText(""+cartCountVal);
-                Toast.makeText(this,"ww"+ index,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,shoppingCartList.get(index).getName()+"를 장바구니에 넣었습니다. 개수"+shoppingCartList.get(index).getQuantity()+index,Toast.LENGTH_SHORT).show();
+                for (DrinkItem item: shoppingCartList) {
+                    Log.d("item", "이름:"+item.getName());
+                }
             });
         }
 
-
-
         //todo: 시작시 위스키로 시작하고 카테고리 클릭시 해당 술 나오게 하기.
-        List<DrinkItem> drinkItems = dBhelper.getDrinkItemsByKindId(1);
-        int imageButtonIndex=0;
-        for (DrinkItem item : drinkItems) {
-            Log.d("MainActivity", item.toString());
-            // 첫 번째 아이템의 이미지를 ImageButton에 설정
-            if (item.getPic() != null) {
-                byte[] imageBytes = item.getPic();
-                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                imageViews[imageButtonIndex].setImageBitmap(bitmap);
-            }
-            textViews[imageButtonIndex].setText(item.getName());
-            tvPrices[imageButtonIndex].setText(""+item.getPrice());
-            //todo:가격 넣기
-            imageButtonIndex++;
-
-        }
-
+        List<DrinkItem> firstDrinkItems = dBhelper.getDrinkItemsByKindId(1);
+        viewListItem(firstDrinkItems);
 
         btnBack.setOnClickListener(view -> {
             finish();
@@ -156,6 +149,8 @@ public class DrinkList extends AppCompatActivity {
             });
             finishDialog.show();
         });
+
+        //todo 술 종류별 처리
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -201,5 +196,39 @@ public class DrinkList extends AppCompatActivity {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         return stream.toByteArray();
+    }
+
+    //동일한 술 선택시 갯수 증가
+    private void addToCart(DrinkItem newItem) {
+        boolean itemExists = false;
+        for (DrinkItem item : shoppingCartList) {
+            if (item.getName().equals(newItem.getName())) {
+                item.setQuantity(item.getQuantity() + 1);
+                Log.d("add", "addToCart: "+item.getQuantity());
+                itemExists = true;
+                break;
+            }
+        }
+        if (!itemExists) {
+            shoppingCartList.add(newItem);
+        }
+    }
+
+    private void viewListItem(List<DrinkItem> drinkItems){
+        int imageButtonIndex=0;
+        for (DrinkItem item : drinkItems) {
+            Log.d("MainActivity", item.toString());
+            // 첫 번째 아이템의 이미지를 ImageButton에 설정
+            if (item.getPic() != null) {
+                byte[] imageBytes = item.getPic();
+                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                imageViews[imageButtonIndex].setImageBitmap(bitmap);
+            }
+            textViews[imageButtonIndex].setText(item.getName());
+            tvPrices[imageButtonIndex].setText(""+item.getPrice());
+            //todo:가격 넣기
+            imageButtonIndex++;
+
+        }
     }
 }
