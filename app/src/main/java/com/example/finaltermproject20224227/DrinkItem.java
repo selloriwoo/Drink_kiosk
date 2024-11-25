@@ -5,12 +5,14 @@ public class DrinkItem {
     private byte[] pic;
     private int kindId;
     private int price;
+    private int quantity;
 
     public DrinkItem(String name, byte[] pic, int kindId, int price) {
         this.name = name;
         this.pic = pic;
         this.kindId = kindId;
         this.price = price;
+        this.quantity = 1;
     }
 
     public String getName() {
@@ -29,6 +31,9 @@ public class DrinkItem {
         return price;
     }
 
+    public int getQuantity() {return quantity;}
+
+    public void setQuantity(int quantity) {this.quantity = quantity;}
     @Override
     public String toString() {
         return "DrinkItem{" +
