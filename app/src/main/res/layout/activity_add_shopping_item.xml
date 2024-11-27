@@ -26,51 +26,47 @@
         android:layout_height="wrap_content"
         android:text="-종류-" />
 
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content" >
-
-        <LinearLayout
-            android:layout_width="380dp"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+        <RadioGroup
+            android:id="@+id/rgCategory"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
 
             <RadioButton
-                android:id="@+id/radioButton"
+                android:id="@+id/rbWisky"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="위스키" />
+                android:text="위스키"
+                android:textSize="20dp" />
 
             <RadioButton
-                android:id="@+id/radioButton2"
+                android:id="@+id/rbVodka"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:textSize="20dp"
-                android:text="보드카" />
+                android:text="보드카"
+                android:textSize="20dp" />
 
             <RadioButton
-                android:id="@+id/radioButton3"
+                android:id="@+id/rbCocktail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:textSize="20dp"
-                android:text="칵테일" />
+                android:text="칵테일"
+                android:textSize="20dp" />
 
             <RadioButton
-                android:id="@+id/radioButton4"
+                android:id="@+id/rbSake"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:textSize="20dp"
-                android:text="사케" />
-        </LinearLayout>
-    </RadioGroup>
+                android:text="사케"
+                android:textSize="20dp" />
+        </RadioGroup>
 
     <EditText
-        android:id="@+id/editTextText"
+        android:id="@+id/etName"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -80,13 +76,12 @@
         android:hint="상품 이름" />
 
     <EditText
-        android:id="@+id/editTextText2"
+        android:id="@+id/etPrice"
         android:layout_width="300dp"
         android:layout_gravity="center"
         android:layout_height="wrap_content"
-
         android:ems="10"
-        android:inputType="numberDecimal"
+        android:inputType="number"
         android:hint="가격" />
 
     <ImageView
