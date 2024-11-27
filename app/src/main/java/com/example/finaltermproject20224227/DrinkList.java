@@ -12,8 +12,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +37,7 @@ public class DrinkList extends AppCompatActivity {
     TextView tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tvMain, tvCartCount;
     TextView tvPrice1, tvPrice2, tvPrice3, tvPrice4, tvPrice5, tvPrice6, tvPrice7, tvPrice8, tvPrice9;
     ImageView iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9, orderCartIb;
+    EditText etName, etPrice;
     Button btnWhisky, btnVodka, btnCocktail, btnSake, btnBack, btnCommunity, listAddBtn, addItemFinish, addImageBtn;
     ImageView addIv;
     LinearLayout listLayout1, listLayout2, listLayout3, listLayout4, listLayout5, listLayout6, listLayout7, listLayout8, listLayout9;
@@ -42,12 +46,15 @@ public class DrinkList extends AppCompatActivity {
     ImageView[] imageViews = {iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9};
     Button[] buttons = {btnWhisky, btnVodka, btnCocktail, btnSake};
     LinearLayout[] linearLayouts = {listLayout1, listLayout2, listLayout3, listLayout4, listLayout5, listLayout6, listLayout7, listLayout8, listLayout9};
+    RadioButton rbWisky, rbVodka, rbCocktail, rbSake;
+    RadioGroup rgCategory;
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int STORAGE_PERMISSION_CODE = 101;
     private Bitmap selectedBitmap;
     DBhelper dBhelper;
     int categoryPtr = 1;
     int cartCountVal = 0;
+    int radioItemCategory = 0;
     ArrayList<DrinkItem> shoppingCartList = new ArrayList<>();
 
     @Override
@@ -111,10 +118,10 @@ public class DrinkList extends AppCompatActivity {
                     Toast.makeText(this,"상품이 없습니다!",Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                //todo:
                 addToCart(new DrinkItem(
                         textViews[index].getText().toString(),
-                        getImageNameFromImageView(imageViews[index]), // 파일 이름을 전달
+                        textViews[index].getText().toString(), // 파일 이름을 전달
                         categoryPtr,
                         Integer.parseInt(tvPrices[index].getText().toString())
                 ));
@@ -158,16 +165,41 @@ public class DrinkList extends AppCompatActivity {
             addItemFinish = finishDialog.findViewById(R.id.addItemFinish);
             addImageBtn = finishDialog.findViewById(R.id.addImageBtn);
             addIv = finishDialog.findViewById(R.id.addIv);
-
+            etName = finishDialog.findViewById(R.id.etName);
+            etPrice = finishDialog.findViewById(R.id.etPrice);
+            rgCategory =finishDialog.findViewById(R.id.rgCategory);
+            //카테고리 기본으로 보드카
+            rbWisky = finishDialog.findViewById(R.id.rbWisky);
+            rbWisky.setChecked(true);
+            radioItemCategory =1;
+//            rbVodka = finishDialog.findViewById(R.id.rbVodka);
+//            rbCocktail = finishDialog.findViewById(R.id.rbCocktail);
+//            rbSake = finishDialog.findViewById(R.id.rbSake);
             //todo: radio버튼
+            rgCategory.setOnCheckedChangeListener((radioGroup, i) -> {
+                if(R.id.rbWisky == i){
+                    radioItemCategory =1;
+                } else if (R.id.rbVodka == i) {
+                    radioItemCategory =2;
+                } else if (R.id.rbCocktail == i) {
+                    radioItemCategory =3;
+                } else if (R.id.rbSake == i) {
+                    radioItemCategory =4;
+                }
+            });
+            finishDialog.show();
             addImageBtn.setOnClickListener(view1 -> {
                 openFileChooser();
             });
             addItemFinish.setOnClickListener(view1 -> {
-                saveStoreItem();
-                finish();
+                Boolean isStore = saveStoreItem();
+                //추가 완료시 다이어로그 끄기
+                if(isStore == true){
+                    finishDialog.dismiss();
+                    List<DrinkItem> drinkItems = dBhelper.getDrinkItemsByKindId(categoryPtr);
+                    viewListItem(drinkItems);
+                }
             });
-            finishDialog.show();
         });
         //todo 술 종류별 처리
 
@@ -199,22 +231,37 @@ public class DrinkList extends AppCompatActivity {
         }
     }
 
-    // 이미지 저장 및 데이터베이스에 파일 이름 저장
-    private void saveStoreItem() {
-        if (selectedBitmap != null) {
-            String imageName = saveImageToLocal(selectedBitmap, "image_name"); // 로컬 저장소에 이미지 저장
-            // 여러 값 추가
-            dBhelper.addItem(imageName, "ww", 1L, 200);
-            Toast.makeText(this, "상품이 등록되었습니다.", Toast.LENGTH_SHORT).show();
+    private boolean saveStoreItem() {
+        String imageName = etName.getText().toString().trim();
+        if (isImageNameDuplicate(imageName)) {
+            Toast.makeText(this, "이미 동일한 이름의 이미지가 존재합니다.", Toast.LENGTH_SHORT).show();
+            return false;
         } else {
-            Toast.makeText(this, "먼저 이미지를 선택하세요.", Toast.LENGTH_SHORT).show();
+            String savedImageName = null;
+            if (selectedBitmap != null) {
+                savedImageName = saveImageToLocal(selectedBitmap, imageName); // 로컬 저장소에 이미지 저장
+            }
+            dBhelper.addItem(savedImageName, etName.getText().toString().trim(), (long) radioItemCategory, Integer.parseInt(etPrice.getText().toString().trim()));
+            Toast.makeText(this, "상품이 등록되었습니다.", Toast.LENGTH_SHORT).show();
+            return true;
         }
     }
 
     // 이미지를 로컬 저장소에 저장
     private String saveImageToLocal(Bitmap image, String imageName) {
+        // 파일 이름에 .png 확장자가 이미 포함되어 있는지 확인
+        if (!imageName.endsWith(".png")) {
+            imageName += ".png";
+        }
         File directory = getDir("images", Context.MODE_PRIVATE);
-        File imageFile = new File(directory, imageName + ".png");
+        File imageFile = new File(directory, imageName);
+        // 파일 이름 중복 검사 및 고유 이름 생성
+        int counter = 1;
+        while (imageFile.exists()) {
+            String baseName = imageName.substring(0, imageName.lastIndexOf("."));
+            imageFile = new File(directory, baseName + "_" + counter + ".png");
+            counter++;
+        }
         try (FileOutputStream fos = new FileOutputStream(imageFile)) {
             image.compress(Bitmap.CompressFormat.PNG, 100, fos);
         } catch (Exception e) {
@@ -269,6 +316,9 @@ public class DrinkList extends AppCompatActivity {
     }
     // 이미지를 로컬 저장소에서 불러오기
     private Bitmap getImage(String imageName) {
+        if (imageName == null) {
+            return null; // 이미지 파일 이름이 null인 경우 null 반환
+        }
         // 파일 이름에 .png 확장자가 이미 포함되어 있는지 확인
         if (!imageName.endsWith(".png")) {
             imageName += ".png";
@@ -281,7 +331,7 @@ public class DrinkList extends AppCompatActivity {
             Log.e("getImage", "Image file not found: " + imageFile.getAbsolutePath());
             return null;
         }
-    }
+        }
     //각 아이템 클린 초기화
     private void resetItem(){
         for (ImageView iv: imageViews)
@@ -306,5 +356,15 @@ public class DrinkList extends AppCompatActivity {
             return "image_name"; // 실제 파일 이름으로 변경해야 합니다.
         }
         return null;
+    }
+    private boolean isImageNameDuplicate(String imageName) {
+        // 파일 이름에 .png 확장자가 이미 포함되어 있는지 확인
+        if (!imageName.endsWith(".png")) {
+            imageName += ".png";
+        }
+
+        File directory = getDir("images", Context.MODE_PRIVATE);
+        File imageFile = new File(directory, imageName);
+        return imageFile.exists();
     }
 }
