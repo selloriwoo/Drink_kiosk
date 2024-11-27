@@ -1,10 +1,12 @@
 package com.example.finaltermproject20224227;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,6 +24,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +96,7 @@ public class DrinkList extends AppCompatActivity {
         for (int i = 0; i <buttons.length; i++){
             int index = i+1;
             buttons[i].setOnClickListener(view -> {
+                //각 카테고리 클릭시 아이템 나오게 함.
                 categoryPtr= index;
                 List<DrinkItem> drinkItems = dBhelper.getDrinkItemsByKindId(categoryPtr);
                 viewListItem(drinkItems);
@@ -100,20 +105,31 @@ public class DrinkList extends AppCompatActivity {
         for (int i =0; i < linearLayouts.length; i++){
             int index = i; //안 적으면 리스너 안에서 i 값 사용 불가
             linearLayouts[i].setOnClickListener(view -> {
-                //todo 클릭시 장바구니에 담게.
-                addToCart(new DrinkItem(textViews[index].getText().toString(),getBytesFromBitmap(((BitmapDrawable)imageViews[index].getDrawable()).getBitmap()),categoryPtr, Integer.parseInt(tvPrices[index].getText().toString())));
-                Bitmap bitmap = BitmapFactory.decodeByteArray(shoppingCartList.get(index).getPic(), 0, shoppingCartList.get(index).getPic().length);
-                imageViews[7].setImageBitmap(bitmap);
+
+                //없는 상품 처리
+                if(textViews[index].getText().toString().equals("")) {
+                    Toast.makeText(this,"상품이 없습니다!",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                addToCart(new DrinkItem(
+                        textViews[index].getText().toString(),
+                        getImageNameFromImageView(imageViews[index]), // 파일 이름을 전달
+                        categoryPtr,
+                        Integer.parseInt(tvPrices[index].getText().toString())
+                ));
+
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(shoppingCartList.get(index).getPic(), 0, shoppingCartList.get(index).getPic().length);
+//                imageViews[7].setImageBitmap(bitmap);
                 cartCountVal++;
                 tvCartCount.setText(""+cartCountVal);
-                Toast.makeText(this,shoppingCartList.get(index).getName()+"를 장바구니에 넣었습니다. 개수"+shoppingCartList.get(index).getQuantity()+index,Toast.LENGTH_SHORT).show();
                 for (DrinkItem item: shoppingCartList) {
                     Log.d("item", "이름:"+item.getName());
                 }
             });
         }
 
-        //todo: 시작시 위스키로 시작하고 카테고리 클릭시 해당 술 나오게 하기.
+        //시작시 첫 술 아이템 나옴
         List<DrinkItem> firstDrinkItems = dBhelper.getDrinkItemsByKindId(1);
         viewListItem(firstDrinkItems);
 
@@ -126,8 +142,12 @@ public class DrinkList extends AppCompatActivity {
         });
 
         orderCartIb.setOnClickListener(view -> {
+            if(shoppingCartList.isEmpty()){
+                Toast.makeText(this, "상품을 선택해 주세요!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(view.getContext(), shoppingCart.class);
-            intent.putExtra("shopping_card",shoppingCartList);
+            intent.putExtra("shoppingCartList",shoppingCartList);
             startActivity(intent);
         });
 
@@ -141,7 +161,7 @@ public class DrinkList extends AppCompatActivity {
 
             //todo: radio버튼
             addImageBtn.setOnClickListener(view1 -> {
-                    openFileChooser();
+                openFileChooser();
             });
             addItemFinish.setOnClickListener(view1 -> {
                 saveStoreItem();
@@ -149,7 +169,6 @@ public class DrinkList extends AppCompatActivity {
             });
             finishDialog.show();
         });
-
         //todo 술 종류별 처리
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -158,6 +177,7 @@ public class DrinkList extends AppCompatActivity {
             return insets;
         });
     }
+    // 파일 선택기 열기
     private void openFileChooser() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -179,17 +199,28 @@ public class DrinkList extends AppCompatActivity {
         }
     }
 
+    // 이미지 저장 및 데이터베이스에 파일 이름 저장
     private void saveStoreItem() {
         if (selectedBitmap != null) {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] imageBytes = stream.toByteArray();
-            //todo: 여러값 추가
-//            dBhelper.addItem(imageBytes, "ww", 1L,200);
+            String imageName = saveImageToLocal(selectedBitmap, "image_name"); // 로컬 저장소에 이미지 저장
+            // 여러 값 추가
+            dBhelper.addItem(imageName, "ww", 1L, 200);
             Toast.makeText(this, "상품이 등록되었습니다.", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "먼저 이미지를 선택하세요.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // 이미지를 로컬 저장소에 저장
+    private String saveImageToLocal(Bitmap image, String imageName) {
+        File directory = getDir("images", Context.MODE_PRIVATE);
+        File imageFile = new File(directory, imageName + ".png");
+        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+            image.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imageFile.getName(); // 파일 이름 반환
     }
 
     public byte[] getBytesFromBitmap(Bitmap bitmap) {
@@ -200,9 +231,10 @@ public class DrinkList extends AppCompatActivity {
 
     //동일한 술 선택시 갯수 증가
     private void addToCart(DrinkItem newItem) {
+
         boolean itemExists = false;
         for (DrinkItem item : shoppingCartList) {
-            if (item.getName().equals(newItem.getName())) {
+            if (item.getName().equals(newItem.getName()) && item.getKindId() == newItem.getKindId()) {
                 item.setQuantity(item.getQuantity() + 1);
                 Log.d("add", "addToCart: "+item.getQuantity());
                 itemExists = true;
@@ -211,24 +243,68 @@ public class DrinkList extends AppCompatActivity {
         }
         if (!itemExists) {
             shoppingCartList.add(newItem);
+            Log.d("addItem", "addToCart: "+shoppingCartList.get(0).getName());
         }
     }
 
-    private void viewListItem(List<DrinkItem> drinkItems){
-        int imageButtonIndex=0;
+    private void viewListItem(List<DrinkItem> drinkItems) {
+        int imageButtonIndex = 0;
+        resetItem();
         for (DrinkItem item : drinkItems) {
             Log.d("MainActivity", item.toString());
             // 첫 번째 아이템의 이미지를 ImageButton에 설정
             if (item.getPic() != null) {
-                byte[] imageBytes = item.getPic();
-                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                imageViews[imageButtonIndex].setImageBitmap(bitmap);
+                Bitmap bitmap = getImage(item.getPic()); // 파일 이름을 사용하여 로컬 저장소에서 이미지 불러오기
+                if (bitmap != null) {
+                    Log.d("aa", "viewListItem: ");
+                    imageViews[imageButtonIndex].setImageBitmap(bitmap);
+                } else {
+                    Log.e("viewListItem", "Failed to load image for item: " + item.getName());
+                }
             }
             textViews[imageButtonIndex].setText(item.getName());
-            tvPrices[imageButtonIndex].setText(""+item.getPrice());
-            //todo:가격 넣기
+            tvPrices[imageButtonIndex].setText("" + item.getPrice());
             imageButtonIndex++;
-
         }
+    }
+    // 이미지를 로컬 저장소에서 불러오기
+    private Bitmap getImage(String imageName) {
+        // 파일 이름에 .png 확장자가 이미 포함되어 있는지 확인
+        if (!imageName.endsWith(".png")) {
+            imageName += ".png";
+        }
+        File directory = getDir("images", Context.MODE_PRIVATE);
+        File imageFile = new File(directory, imageName);
+        if (imageFile.exists()) {
+            return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+        } else {
+            Log.e("getImage", "Image file not found: " + imageFile.getAbsolutePath());
+            return null;
+        }
+    }
+    //각 아이템 클린 초기화
+    private void resetItem(){
+        for (ImageView iv: imageViews)
+            if (iv != null)
+                iv.setImageResource(R.color.white);
+        for (TextView tv: textViews)
+            if (tv != null)
+                tv.setText("");
+        for (TextView tv: tvPrices)
+            if (tv != null)
+                tv.setText("");
+    }
+    // ImageView에서 파일 이름을 추출하는 메서드
+    private String getImageNameFromImageView(ImageView imageView) {
+        Drawable drawable = imageView.getDrawable();
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            // 파일 이름을 추출하는 로직을 추가해야 합니다.
+            // 예를 들어, Bitmap을 파일 이름으로 매핑하는 방법을 사용합니다.
+            // 여기서는 간단히 "image_name"을 반환합니다.
+            return "image_name"; // 실제 파일 이름으로 변경해야 합니다.
+        }
+        return null;
     }
 }

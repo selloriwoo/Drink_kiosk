@@ -1,13 +1,15 @@
 package com.example.finaltermproject20224227;
 
-public class DrinkItem {
+import java.io.Serializable;
+
+public class DrinkItem implements Serializable {
     private String name;
-    private byte[] pic;
+    private String pic; // 파일 이름을 저장하기 위한 String 타입
     private int kindId;
     private int price;
     private int quantity;
 
-    public DrinkItem(String name, byte[] pic, int kindId, int price) {
+    public DrinkItem(String name, String pic, int kindId, int price) {
         this.name = name;
         this.pic = pic;
         this.kindId = kindId;
@@ -19,7 +21,7 @@ public class DrinkItem {
         return name;
     }
 
-    public byte[] getPic() {
+    public String getPic() {
         return pic;
     }
 
@@ -31,9 +33,14 @@ public class DrinkItem {
         return price;
     }
 
-    public int getQuantity() {return quantity;}
+    public int getQuantity() {
+        return quantity;
+    }
 
-    public void setQuantity(int quantity) {this.quantity = quantity;}
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
         return "DrinkItem{" +
@@ -42,4 +49,5 @@ public class DrinkItem {
                 ", price=" + price +
                 '}';
     }
+
 }
