@@ -3,6 +3,7 @@ package com.example.finaltermproject20224227;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.util.ArrayList;
 
 public class shoppingCart extends AppCompatActivity {
     Button orderBtn;
@@ -21,6 +24,9 @@ public class shoppingCart extends AppCompatActivity {
         setContentView(R.layout.activity_shopping_cart);
         orderBtn = findViewById(R.id.orderBtn);
 
+        Intent getIntent = getIntent();
+        ArrayList<DrinkItem> shoppingCartList = (ArrayList<DrinkItem>) getIntent.getSerializableExtra("shoppingCartList");
+        Log.d("intentItem", "onCreate: "+shoppingCartList.get(0).getName());
         orderBtn.setOnClickListener(v -> {
             final Dialog finishDialog = new Dialog(this);
             finishDialog.setContentView(R.layout.activity_order_finish);
