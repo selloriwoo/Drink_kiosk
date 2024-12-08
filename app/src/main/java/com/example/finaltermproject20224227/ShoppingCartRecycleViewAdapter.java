@@ -19,14 +19,17 @@ import java.util.ArrayList;
 
 public class ShoppingCartRecycleViewAdapter extends RecyclerView.Adapter<ShoppingCartRecycleViewAdapter.ViewHolder>{
 
-    public Context ctx;
-    public LayoutInflater layoutInflater;
-    ArrayList<DrinkItem> drinkItemArrayList;
+    private Context ctx;
+    private LayoutInflater layoutInflater;
+    private ArrayList<DrinkItem> drinkItemArrayList;
+    private ShoppingCart shoppingCart;
 
-    public ShoppingCartRecycleViewAdapter(Context ctx, ArrayList<DrinkItem> drinkItemArrayList){
+    public ShoppingCartRecycleViewAdapter(Context ctx, ArrayList<DrinkItem> drinkItemArrayList, ShoppingCart shoppingCart) {
         this.drinkItemArrayList = drinkItemArrayList;
         this.ctx = ctx;
+        this.shoppingCart = shoppingCart;
     }
+
     @NonNull
     @Override
     public ShoppingCartRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,11 +43,14 @@ public class ShoppingCartRecycleViewAdapter extends RecyclerView.Adapter<Shoppin
         holder.cartItemTvPrice.setText(String.valueOf(drinkItemArrayList.get(position).getPrice()));
         holder.cartItemImg.setImageBitmap(getImage(drinkItemArrayList.get(position).getPic()));
         holder.cartViewTvQuantity.setText(String.valueOf(drinkItemArrayList.get(position).getQuantity()));
+
         // 삭제 버튼 클릭 이벤트 처리
         holder.cartViewBtnDelete.setOnClickListener(v -> {
-            // 아이템 삭제
             int position1 = holder.getAdapterPosition();
             if (position1 != RecyclerView.NO_POSITION) {
+                // total 값 업데이트
+                shoppingCart.updateTotal(-drinkItemArrayList.get(position1).getPrice());
+
                 drinkItemArrayList.remove(position1);
                 notifyItemRemoved(position1);
                 notifyItemRangeChanged(position1, drinkItemArrayList.size());
@@ -56,6 +62,7 @@ public class ShoppingCartRecycleViewAdapter extends RecyclerView.Adapter<Shoppin
     public int getItemCount() {
         return drinkItemArrayList.size();
     }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView cartItemTvName;
         TextView cartItemTvPrice;
@@ -71,8 +78,8 @@ public class ShoppingCartRecycleViewAdapter extends RecyclerView.Adapter<Shoppin
             cartViewTvQuantity = itemView.findViewById(R.id.cartViewTvQuantity);
             cartViewBtnDelete = itemView.findViewById(R.id.cartViewBtnDelete);
         }
-
     }
+
     // 이미지를 로컬 저장소에서 불러오기
     private Bitmap getImage(String imageName) {
         if (imageName == null) {

@@ -37,7 +37,7 @@
             android:text="합계:  " />
 
         <TextView
-            android:id="@+id/cartTv3"
+            android:id="@+id/cartTotalTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="30dp"
