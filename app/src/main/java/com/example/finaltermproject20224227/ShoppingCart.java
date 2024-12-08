@@ -26,6 +26,8 @@ public class ShoppingCart extends AppCompatActivity implements TextToSpeech.OnIn
     DBhelper dbhelper;
     TextView orderFinishDate;
     TextToSpeech textToSpeech;
+    TextView cartTotalTv;
+    int total = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +39,20 @@ public class ShoppingCart extends AppCompatActivity implements TextToSpeech.OnIn
 
         orderBtn = findViewById(R.id.orderBtn);
         orderBackBtn = findViewById(R.id.orderBackBtn);
+        cartTotalTv = findViewById(R.id.cartTotalTv);
         textToSpeech = new TextToSpeech(this, this);
         Intent getIntent = getIntent();
         ArrayList<DrinkItem> shoppingCartList = (ArrayList<DrinkItem>) getIntent.getSerializableExtra("shoppingCartList");
         RecyclerView recyclerView = findViewById(R.id.cartView);
-        adapter = new ShoppingCartRecycleViewAdapter(this, shoppingCartList);
+        adapter = new ShoppingCartRecycleViewAdapter(this, shoppingCartList, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+
+        for (DrinkItem drinkItem: shoppingCartList)
+            total += drinkItem.getPrice();
+
+        cartTotalTv.setText(""+total);
         orderBtn.setOnClickListener(v -> {
             dbhelper.insertOrder(shoppingCartList);
             final Dialog finishDialog = new Dialog(this);
@@ -95,5 +104,9 @@ public class ShoppingCart extends AppCompatActivity implements TextToSpeech.OnIn
             textToSpeech.shutdown();
         }
         super.onDestroy();
+    }
+    public void updateTotal(int amount) {
+        total += amount;
+        cartTotalTv.setText(String.valueOf(total));
     }
 }

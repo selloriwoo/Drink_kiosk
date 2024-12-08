@@ -30,7 +30,6 @@ public class Community extends AppCompatActivity {
 
         //리뷰 불러오기
         reviewDataArrayList = dBhelper.getAllReviewsWithDrinkItemDetails();
-        Log.d("reviewDataArrayList", "onCreate: "+reviewDataArrayList.size()+" "+ reviewDataArrayList.get(2).getReviewText());
         adapter = new MyAdapter(this, reviewDataArrayList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
