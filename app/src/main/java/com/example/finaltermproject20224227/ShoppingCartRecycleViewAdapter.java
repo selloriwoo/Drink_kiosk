@@ -20,7 +20,6 @@ import java.util.ArrayList;
 public class ShoppingCartRecycleViewAdapter extends RecyclerView.Adapter<ShoppingCartRecycleViewAdapter.ViewHolder>{
 
     private Context ctx;
-    private LayoutInflater layoutInflater;
     private ArrayList<DrinkItem> drinkItemArrayList;
     private ShoppingCart shoppingCart;
 

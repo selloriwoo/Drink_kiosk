@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public Context ctx;
-    public LayoutInflater mInflater;
     public ArrayList<Review> reviewArrayList;
 
     public MyAdapter(Context ctx, ArrayList<Review> reviewArrayList){
@@ -61,11 +60,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
     }
-    public interface ItemClickListener{
-        void onItemClick(View view, int position);
-    }
-
-    Review getItem(int id) {return reviewArrayList.get(id);}
 
     // 이미지를 로컬 저장소에서 불러오기
     private Bitmap getImage(String imageName) {

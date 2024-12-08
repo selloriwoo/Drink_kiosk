@@ -31,9 +31,6 @@ public class Review implements Serializable {
         return rating;
     }
 
-    public int getDrinkItemId() {
-        return drinkItemId;
-    }
 
     public String getDrinkItemName() {
         return drinkItemName;

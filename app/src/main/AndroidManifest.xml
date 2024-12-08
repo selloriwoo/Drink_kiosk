@@ -24,9 +24,6 @@
             android:name=".ShoppingCart"
             android:exported="false" />
         <activity
-            android:name=".DrinkDetail"
-            android:exported="false" />
-        <activity
             android:name=".Community"
             android:exported="false" />
         <activity

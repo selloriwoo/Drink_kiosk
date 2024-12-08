@@ -129,7 +129,6 @@ public class DBhelper extends SQLiteOpenHelper {
         return BitmapFactory.decodeResource(context.getResources(), drawableId);
     }
 
-    //todo 불로올 때 사진 말고 다른값도 보내주는 메서드도 추가
     //이미지를 로컬 저장소에 저장
     private String saveImageToLocal(Bitmap image, String imageName) {
         File directory = context.getDir("images", Context.MODE_PRIVATE);
@@ -142,16 +141,6 @@ public class DBhelper extends SQLiteOpenHelper {
         return imageFile.getName(); // 파일 이름 반환
     }
 
-    private Bitmap getImage(String imageName) {
-        File directory = context.getDir("images", Context.MODE_PRIVATE);
-        File imageFile = new File(directory, imageName + ".png");
-        if (imageFile.exists()) {
-            return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-        } else {
-            Log.e("getImage", "Image file not found: " + imageFile.getAbsolutePath());
-            return null;
-        }
-    }
 
     public List<DrinkItem> getDrinkItemsByKindId(int kindId) {
         List<DrinkItem> drinkItems = new ArrayList<>();

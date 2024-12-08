@@ -315,12 +315,6 @@ public class DrinkList extends AppCompatActivity {
         return imageFile.getName(); // 파일 이름 반환
     }
 
-    public byte[] getBytesFromBitmap(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
-    }
-
     //동일한 술 선택시 갯수 증가
     private void addToCart(DrinkItem newItem) {
 
