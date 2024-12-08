@@ -46,8 +46,8 @@ public class DBhelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "review TEXT," +
                 "rating REAL," +
-                "drinkItem INTEGER," +
-                "FOREIGN KEY (drinkItem) REFERENCES drinkItem(id));");
+                "drinkItemId INTEGER," +
+                "FOREIGN KEY (drinkItemId) REFERENCES drinkItem(id));");
 
         // Create order table
         db.execSQL("CREATE TABLE `order` (" +
@@ -76,15 +76,14 @@ public class DBhelper extends SQLiteOpenHelper {
         drinkItems.add(new DrinkItem("러시아 스텐다드 오리지널", saveImageToLocal(getBitmapFromDrawable(context, R.drawable.vodka_russian_standard_original), "러시아 스텐다드 오리지널"), 2, 50000));
 
 
-        //todo: 다른 술도 넣기.
-
         for (DrinkItem item : drinkItems) {
             ContentValues values = new ContentValues();
             values.put("name", item.getName());
             values.put("pic", item.getPic());
             values.put("kindId", item.getKindId());
             values.put("price", item.getPrice());
-            db.insert("drinkItem", null, values);
+            long id = db.insert("drinkItem", null, values);
+            item.setId((int) id); // ID 값을 설정
         }
 
     }
@@ -103,6 +102,7 @@ public class DBhelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // 술 추가
     public void addItem(String imageName, String name, Long kindId, Integer price) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -112,6 +112,16 @@ public class DBhelper extends SQLiteOpenHelper {
         values.put("price", price);
         db.insert("drinkItem", null, values);
         db.close();
+    }
+
+    // 리뷰 추가
+    public long addReview(String reviewText, float rating, int drinkItemId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("review", reviewText);
+        values.put("rating", rating);
+        values.put("drinkItemId", drinkItemId);
+        return db.insert("review", null, values);
     }
 
     // Bitmap을 Drawable에서 가져오기
@@ -147,23 +157,85 @@ public class DBhelper extends SQLiteOpenHelper {
         List<DrinkItem> drinkItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query("drinkItem",
-                new String[]{"name", "pic", "kindId", "price"},
+                new String[]{"id", "name", "pic", "kindId", "price"},
                 "kindId=?",
                 new String[]{String.valueOf(kindId)},
                 null, null, null);
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                 String pic = cursor.getString(cursor.getColumnIndexOrThrow("pic"));
                 int kindIdFromDb = cursor.getInt(cursor.getColumnIndexOrThrow("kindId"));
                 int price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
-                drinkItems.add(new DrinkItem(name, pic, kindIdFromDb, price)); // 파일 이름을 사용하여 DrinkItem 객체 생성
+                DrinkItem item = new DrinkItem(name, pic, kindIdFromDb, price); // ID 값을 제외하고 DrinkItem 객체 생성
+                item.setId(id); // ID 값을 설정
+                drinkItems.add(item);
             }
             cursor.close();
         }
         db.close();
         return drinkItems;
+    }
+
+    // 모든 리뷰와 해당 아이템의 name과 pic을 불러오는 메서드
+    public ArrayList<Review> getAllReviewsWithDrinkItemDetails() {
+        ArrayList<Review> reviews = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT review.id, review.review, review.rating, review.drinkItemId, drinkItem.name, drinkItem.pic " +
+                "FROM review " +
+                "INNER JOIN drinkItem ON review.drinkItemId = drinkItem.id " +
+                "ORDER BY review.id DESC"; // id를 기준으로 내림차순 정렬
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String reviewText = cursor.getString(cursor.getColumnIndexOrThrow("review"));
+                float rating = cursor.getFloat(cursor.getColumnIndexOrThrow("rating"));
+                int drinkItemId = cursor.getInt(cursor.getColumnIndexOrThrow("drinkItemId"));
+                String drinkItemName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                String drinkItemPic = cursor.getString(cursor.getColumnIndexOrThrow("pic"));
+                reviews.add(new Review(id, reviewText, rating, drinkItemId, drinkItemName, drinkItemPic));
+            }
+            cursor.close();
+        }
+        db.close();
+        return reviews;
+    }
+
+    // 주문 삽입 메서드
+    public void insertOrder(ArrayList<DrinkItem> shoppingCartList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (DrinkItem item : shoppingCartList) {
+            ContentValues values = new ContentValues();
+            values.put("orderDate", System.currentTimeMillis()); // 현재 시간을 주문 날짜로 사용
+            values.put("drinkItemId", item.getId()); // DrinkItem의 ID를 사용
+            db.insert("`order`", null, values);
+            Log.d("insertItem", "insertOrder: "+item.getId());
+        }
+    }
+
+    // 이름과 카테고리로 id 값을 가져오는 메서드
+    public int getDrinkItemIdByNameAndKind(String name, int kindId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("drinkItem",
+                new String[]{"id"},
+                "name=? AND kindId=?",
+                new String[]{name, String.valueOf(kindId)},
+                null, null, null);
+
+        int id = -1;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            }
+            cursor.close();
+        }
+        Log.d("dwdwd", "getDrinkItemIdByNameAndKind: "+id);
+        db.close();
+        return id;
     }
 
 }

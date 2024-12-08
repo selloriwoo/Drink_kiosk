@@ -2,6 +2,7 @@ package com.example.finaltermproject20224227;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -11,18 +12,21 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
-    Button btn1;
+    private static final int SPLASH_TIME = 3000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        btn1 = findViewById(R.id.btn1);
 
-        btn1.setOnClickListener(view -> {
-            Intent intent = new Intent(view.getContext(), DrinkList.class);
-            startActivity(intent);
-        });
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, DrinkList.class);
+                startActivity(intent);
+                finish();
+            }
+        }, SPLASH_TIME);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

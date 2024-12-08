@@ -1,6 +1,7 @@
 package com.example.finaltermproject20224227;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -14,19 +15,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class Community extends AppCompatActivity {
-    ArrayList<ReviewData> reviewDataArrayList = new ArrayList<>();
+    ArrayList<Review> reviewDataArrayList = new ArrayList<>();
     MyAdapter adapter;
     Button communityBackBtn;
+    DBhelper dBhelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_community);
-
+        dBhelper = new DBhelper(this);
         communityBackBtn = findViewById(R.id.communityBackBtn);
         RecyclerView recyclerView = findViewById(R.id.communityRcView);
-        adapter = new MyAdapter(this, reviewDataArrayList);
 
+        //리뷰 불러오기
+        reviewDataArrayList = dBhelper.getAllReviewsWithDrinkItemDetails();
+        Log.d("reviewDataArrayList", "onCreate: "+reviewDataArrayList.size()+" "+ reviewDataArrayList.get(2).getReviewText());
+        adapter = new MyAdapter(this, reviewDataArrayList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -34,7 +39,7 @@ public class Community extends AppCompatActivity {
             finish();
         });
 
-        //todo sql불러와서 review에 넣기
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

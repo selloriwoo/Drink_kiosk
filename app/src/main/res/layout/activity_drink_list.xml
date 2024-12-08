@@ -565,20 +565,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/btnBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:layout_marginStart="50dp"
-
-                    android:text="뒤로가기" />
 
                 <Button
                     android:id="@+id/btnCommunity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="50dp"
+                    android:layout_marginLeft="130dp"
+                    android:textSize="20dp"
                     android:text="리뷰커뮤니티" />
             </LinearLayout>
         </LinearLayout>

@@ -3,6 +3,7 @@ package com.example.finaltermproject20224227;
 import java.io.Serializable;
 
 public class DrinkItem implements Serializable {
+    private int id;
     private String name;
     private String pic; // 파일 이름을 저장하기 위한 String 타입
     private int kindId;
@@ -41,13 +42,7 @@ public class DrinkItem implements Serializable {
         this.quantity = quantity;
     }
 
-    @Override
-    public String toString() {
-        return "DrinkItem{" +
-                "name='" + name + '\'' +
-                ", kindId=" + kindId +
-                ", price=" + price +
-                '}';
-    }
+    public int getId() { return  id;}
 
+    public void setId(int id) {this.id = id;}
 }

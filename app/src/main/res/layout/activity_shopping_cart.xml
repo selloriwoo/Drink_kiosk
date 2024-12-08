@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".shoppingCart">
+    tools:context=".ShoppingCart">
 
     <TextView
         android:id="@+id/cartTv1"
@@ -57,5 +57,13 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"
         android:text="주문하기" />
+
+    <Button
+        android:id="@+id/orderBackBtn"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:text="뒤로가기" />
 
 </LinearLayout>

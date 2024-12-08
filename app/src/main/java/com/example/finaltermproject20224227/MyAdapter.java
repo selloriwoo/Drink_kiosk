@@ -1,6 +1,9 @@
 package com.example.finaltermproject20224227;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +14,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public Context ctx;
     public LayoutInflater mInflater;
-    public ArrayList<ReviewData> reviewDataArrayList;
-    private ItemClickListener mClickListener;
+    public ArrayList<Review> reviewArrayList;
 
-    public MyAdapter(Context ctx, ArrayList<ReviewData> reviewDataArrayList){
+    public MyAdapter(Context ctx, ArrayList<Review> reviewArrayList){
         this.ctx = ctx;
-        this.reviewDataArrayList = reviewDataArrayList;
+        this.reviewArrayList = reviewArrayList;
     }
 
     @NonNull
@@ -33,41 +36,54 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.tv1.setText(reviewDataArrayList.get(position).review);
-        holder.img1.setImageResource(reviewDataArrayList.get(position).pic);
-        holder.rb1.setRating(reviewDataArrayList.get(position).starPoint);
+        holder.communityItemTv1.setText(reviewArrayList.get(position).getReviewText());
+        holder.communityItemIv1.setImageBitmap(getImage(reviewArrayList.get(position).getDrinkItemPic()));
+        holder.communityItemRb1.setRating(reviewArrayList.get(position).getRating());
+        holder.communityItemName.setText(reviewArrayList.get(position).getDrinkItemName());
     }
 
 
     @Override
     public int getItemCount() {
-        return reviewDataArrayList.size();
+        return reviewArrayList.size();
     }
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tv1;
-        ImageView img1;
-        RatingBar rb1;
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        TextView communityItemTv1, communityItemName;
+        ImageView communityItemIv1;
+        RatingBar communityItemRb1;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tv1 = itemView.findViewById(R.id.communityItemTv1);
-            img1 = itemView.findViewById(R.id.communityItemIv1);
-            rb1 = itemView.findViewById(R.id.communityItemRb1);
-            itemView.setOnClickListener(this);
+            communityItemTv1 = itemView.findViewById(R.id.communityItemTv1);
+            communityItemIv1 = itemView.findViewById(R.id.communityItemIv1);
+            communityItemRb1 = itemView.findViewById(R.id.communityItemRb1);
+            communityItemName = itemView.findViewById(R.id.communityItemName);
         }
 
-        @Override
-        public void onClick(View view) {
-            if(mClickListener != null) {
-                mClickListener.onItemClick(view, getAdapterPosition());
-            }
-        }
-    }
-    void setClickListener(ItemClickListener itemClickListener){
-        this.mClickListener = itemClickListener;
     }
     public interface ItemClickListener{
         void onItemClick(View view, int position);
     }
-    ReviewData getItem(int id) {return reviewDataArrayList.get(id);}
+
+    Review getItem(int id) {return reviewArrayList.get(id);}
+
+    // 이미지를 로컬 저장소에서 불러오기
+    private Bitmap getImage(String imageName) {
+        if (imageName == null) {
+            return null; // 이미지 파일 이름이 null인 경우 null 반환
+        }
+        // 파일 이름에 .png 확장자가 이미 포함되어 있는지 확인
+        if (!imageName.endsWith(".png")) {
+            imageName += ".png";
+        }
+        File directory = ctx.getDir("images", Context.MODE_PRIVATE);
+        File imageFile = new File(directory, imageName);
+        if (imageFile.exists()) {
+            return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+        } else {
+            Log.e("getImage", "Image file not found: " + imageFile.getAbsolutePath());
+            return null;
+        }
+    }
 }
+
