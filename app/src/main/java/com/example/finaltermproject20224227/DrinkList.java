@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,10 +37,11 @@ import java.util.List;
 public class DrinkList extends AppCompatActivity {
     TextView tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tvMain, tvCartCount;
     TextView tvPrice1, tvPrice2, tvPrice3, tvPrice4, tvPrice5, tvPrice6, tvPrice7, tvPrice8, tvPrice9;
+    TextView addReviewItemNameTv;
     ImageView iv1, iv2, iv3, iv4, iv5, iv6, iv7, iv8, iv9, orderCartIb;
     EditText etName, etPrice;
-    Button btnWhisky, btnVodka, btnCocktail, btnSake, btnBack, btnCommunity, listAddBtn, addItemFinish, addImageBtn;
-    ImageView addIv;
+    Button btnWhisky, btnVodka, btnCocktail, btnSake, btnCommunity, listAddBtn, addItemFinish, addImageBtn, selectAddCart, selectReviewTv, addReviewFinishBtn;
+    ImageView addIv, addReviewItemIv;
     LinearLayout listLayout1, listLayout2, listLayout3, listLayout4, listLayout5, listLayout6, listLayout7, listLayout8, listLayout9;
     TextView[] textViews = {tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9, tvMain};
     TextView[] tvPrices = {tvPrice1, tvPrice2, tvPrice3, tvPrice4, tvPrice5, tvPrice6, tvPrice7, tvPrice8, tvPrice9};
@@ -48,6 +50,8 @@ public class DrinkList extends AppCompatActivity {
     LinearLayout[] linearLayouts = {listLayout1, listLayout2, listLayout3, listLayout4, listLayout5, listLayout6, listLayout7, listLayout8, listLayout9};
     RadioButton rbWisky, rbVodka, rbCocktail, rbSake;
     RadioGroup rgCategory;
+    RatingBar addReviewRb;
+    EditText addReviewEt;
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int STORAGE_PERMISSION_CODE = 101;
     private Bitmap selectedBitmap;
@@ -55,7 +59,9 @@ public class DrinkList extends AppCompatActivity {
     int categoryPtr = 1;
     int cartCountVal = 0;
     int radioItemCategory = 0;
+    int orderNum=0;
     ArrayList<DrinkItem> shoppingCartList = new ArrayList<>();
+    private static final int REQUEST_CODE_SHOPPING_CART = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +74,6 @@ public class DrinkList extends AppCompatActivity {
         int[] imageButtonId = {R.id.iv1,R.id.iv2,R.id.iv3,R.id.iv4,R.id.iv5,R.id.iv6,R.id.iv7,R.id.iv8,R.id.iv9};
         int[] buttonId = {R.id.btnWhisky, R.id.btnVodka, R.id.btnCocktail, R.id.btnSake};
         int[] linearLayoutId = {R.id.listLayout1, R.id.listLayout2, R.id.listLayout3, R.id.listLayout4, R.id.listLayout5, R.id.listLayout6, R.id.listLayout7, R.id.listLayout8, R.id.listLayout9};
-        btnBack = findViewById(R.id.btnBack);
         btnCommunity = findViewById(R.id.btnCommunity);
         orderCartIb = findViewById(R.id.orderCartIb);
         listAddBtn = findViewById(R.id.listAddBtn);
@@ -112,27 +117,58 @@ public class DrinkList extends AppCompatActivity {
         for (int i =0; i < linearLayouts.length; i++){
             int index = i; //안 적으면 리스너 안에서 i 값 사용 불가
             linearLayouts[i].setOnClickListener(view -> {
-
                 //없는 상품 처리
                 if(textViews[index].getText().toString().equals("")) {
                     Toast.makeText(this,"상품이 없습니다!",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //todo:
-                addToCart(new DrinkItem(
+                final Dialog selectDialog = new Dialog(this);
+                selectDialog.setContentView(R.layout.select_review_or_cart);
+                selectAddCart = selectDialog.findViewById(R.id.selectAddCart);
+                selectReviewTv = selectDialog.findViewById(R.id.selectReviewTv);
+                DrinkItem drinkItem = new DrinkItem(
                         textViews[index].getText().toString(),
                         textViews[index].getText().toString(), // 파일 이름을 전달
                         categoryPtr,
                         Integer.parseInt(tvPrices[index].getText().toString())
-                ));
+                );
+                int itemId = dBhelper.getDrinkItemIdByNameAndKind(textViews[index].getText().toString(), categoryPtr);
+                drinkItem.setId(itemId);
 
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(shoppingCartList.get(index).getPic(), 0, shoppingCartList.get(index).getPic().length);
-//                imageViews[7].setImageBitmap(bitmap);
-                cartCountVal++;
-                tvCartCount.setText(""+cartCountVal);
-                for (DrinkItem item: shoppingCartList) {
-                    Log.d("item", "이름:"+item.getName());
-                }
+                selectAddCart.setOnClickListener(view1 -> {
+                    addToCart(drinkItem);
+                    cartCountVal++;
+                    tvCartCount.setText(""+cartCountVal);
+
+                    selectDialog.dismiss();
+                });
+
+                selectReviewTv.setOnClickListener(view1 -> {
+                    final Dialog addReviewDialog = new Dialog(this);
+                    addReviewDialog.setContentView(R.layout.add_review);
+                    addReviewFinishBtn = addReviewDialog.findViewById(R.id.addReviewFinishBtn);
+                    addReviewRb = addReviewDialog.findViewById(R.id.addReviewRb);
+                    addReviewEt = addReviewDialog.findViewById(R.id.addReviewEt);
+                    addReviewItemNameTv = addReviewDialog.findViewById(R.id.addReviewItemNameTv);
+                    addReviewItemIv = addReviewDialog.findViewById(R.id.addReviewItemIv);
+
+                    addReviewItemNameTv.setText(drinkItem.getName());
+                    addReviewItemIv.setImageBitmap(getImage(drinkItem.getPic()));
+
+                    addReviewFinishBtn.setOnClickListener(view2 -> {
+                        float rating = addReviewRb.getRating();
+
+                        if(rating == 0.0 || addReviewEt.getText().toString().trim().equals(""))
+                            Toast.makeText(view2.getContext(), "별점과 리뷰를 작성해 주세요.", Toast.LENGTH_SHORT).show();
+
+                        dBhelper.addReview(addReviewEt.getText().toString(), rating, drinkItem.getId());
+                        Toast.makeText(view2.getContext(), "리뷰가 작성되었습니다.", Toast.LENGTH_SHORT).show();
+
+                        addReviewDialog.dismiss();
+                    });
+                    addReviewDialog.show();
+                });
+                selectDialog.show();
             });
         }
 
@@ -140,22 +176,20 @@ public class DrinkList extends AppCompatActivity {
         List<DrinkItem> firstDrinkItems = dBhelper.getDrinkItemsByKindId(1);
         viewListItem(firstDrinkItems);
 
-        btnBack.setOnClickListener(view -> {
-            finish();
-        });
         btnCommunity.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), Community.class);
             startActivity(intent);
         });
 
         orderCartIb.setOnClickListener(view -> {
-            if(shoppingCartList.isEmpty()){
+            if (shoppingCartList.isEmpty()) {
                 Toast.makeText(this, "상품을 선택해 주세요!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Intent intent = new Intent(view.getContext(), shoppingCart.class);
-            intent.putExtra("shoppingCartList",shoppingCartList);
-            startActivity(intent);
+            Intent intent = new Intent(view.getContext(), ShoppingCart.class);
+            intent.putExtra("shoppingCartList", shoppingCartList);
+            intent.putExtra("orderNum", orderNum);
+            startActivityForResult(intent, REQUEST_CODE_SHOPPING_CART);
         });
 
         listAddBtn.setOnClickListener(view -> {
@@ -172,10 +206,7 @@ public class DrinkList extends AppCompatActivity {
             rbWisky = finishDialog.findViewById(R.id.rbWisky);
             rbWisky.setChecked(true);
             radioItemCategory =1;
-//            rbVodka = finishDialog.findViewById(R.id.rbVodka);
-//            rbCocktail = finishDialog.findViewById(R.id.rbCocktail);
-//            rbSake = finishDialog.findViewById(R.id.rbSake);
-            //todo: radio버튼
+
             rgCategory.setOnCheckedChangeListener((radioGroup, i) -> {
                 if(R.id.rbWisky == i){
                     radioItemCategory =1;
@@ -201,7 +232,6 @@ public class DrinkList extends AppCompatActivity {
                 }
             });
         });
-        //todo 술 종류별 처리
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -220,8 +250,23 @@ public class DrinkList extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        Log.d("else333", "onActivityResult: "+"image");
+        if (requestCode == REQUEST_CODE_SHOPPING_CART && resultCode == RESULT_OK) {
+            if (data != null && data.getSerializableExtra("shoppingCartList") != null) {
+                Log.d("if22", "onActivityResult: "+"image");
+                shoppingCartList = (ArrayList<DrinkItem>) data.getSerializableExtra("shoppingCartList");
+                // shoppingCartList 업데이트 후 필요한 작업 수행
+                int count = 0;
+                for (DrinkItem drinkItem: shoppingCartList) {
+                    count += drinkItem.getQuantity();
+                }
+                cartCountVal = count;
+                tvCartCount.setText(""+cartCountVal);
+
+            }
+        } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
+            Log.d("else22", "onActivityResult: "+"image");
             try {
                 selectedBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
                 addIv.setImageBitmap(selectedBitmap);
@@ -290,7 +335,7 @@ public class DrinkList extends AppCompatActivity {
         }
         if (!itemExists) {
             shoppingCartList.add(newItem);
-            Log.d("addItem", "addToCart: "+shoppingCartList.get(0).getName());
+            Log.d("addItem", "addToCart: "+shoppingCartList.get(0).getId());
         }
     }
 
@@ -344,19 +389,7 @@ public class DrinkList extends AppCompatActivity {
             if (tv != null)
                 tv.setText("");
     }
-    // ImageView에서 파일 이름을 추출하는 메서드
-    private String getImageNameFromImageView(ImageView imageView) {
-        Drawable drawable = imageView.getDrawable();
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            Bitmap bitmap = bitmapDrawable.getBitmap();
-            // 파일 이름을 추출하는 로직을 추가해야 합니다.
-            // 예를 들어, Bitmap을 파일 이름으로 매핑하는 방법을 사용합니다.
-            // 여기서는 간단히 "image_name"을 반환합니다.
-            return "image_name"; // 실제 파일 이름으로 변경해야 합니다.
-        }
-        return null;
-    }
+
     private boolean isImageNameDuplicate(String imageName) {
         // 파일 이름에 .png 확장자가 이미 포함되어 있는지 확인
         if (!imageName.endsWith(".png")) {
@@ -367,4 +400,5 @@ public class DrinkList extends AppCompatActivity {
         File imageFile = new File(directory, imageName);
         return imageFile.exists();
     }
+
 }
